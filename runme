@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# The runme file that runs the compiler and checks it's output agains the expect# ed output.
+
+./Step1/testresults/ramachav_compiler $1 > $2
+
