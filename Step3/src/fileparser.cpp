@@ -150,7 +150,7 @@ void print_symbol_table_tree(symbol_table_tree *trunk) {
       if(!strcmp(temp_stem->leaf_scope, "GLOBAL"))
 	printf("Symbol table %s\n", temp_stem->leaf_scope);
       else if(!strcmp(temp_stem->leaf_scope, "BLOCK"))
-	printf("Symbol table %s %d\n", temp_stem->leaf_scope, block_count++);
+	printf("Symbol table %s %d\n", temp_stem->leaf_scope, ++block_count);
       else
 	printf("Symbol table %s\n", temp_stem->leaf_scope);
     }
@@ -170,7 +170,6 @@ int main(int argc, char **argv) {
 
   stem = (symbol_table_tree *) malloc(sizeof(*stem));
   stem->next_leaf = NULL;
-  block_count = 1;
   current_leaf_scope = (char*)"GLOBAL";
   current_branch_scope = (char*)"GLOBAL";
 
