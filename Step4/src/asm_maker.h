@@ -60,9 +60,9 @@ void print_threeAC_code(list_data ptr);
 void print_tiny_code(list_instr ptr);
 void print_inter_list(list_data ptr, string helpful_info);
 
-void create_tiny_code(list_data ptr); //gen_asm. Remove this comment
-void convert_STto3AC(); //symtab_to_ir. Remove this comment
+void create_tiny_code(list_data ptr); 
+void convert_STto3AC(); 
 void set_register_Rd(threeAC_node * temp_node);
-void clean_3ac_list(list_data ptr); //fix_stores_only and remove_bad_nodes. Remove this comment
-void clean_tiny_list(list_instr ptr); //fix_add_sub_mult_div. Remove this comment
-void format_node(list_data ptr, string data_type); //fix_IR. Remove this comment
+void clean_3ac_list(list_data ptr); 
+void clean_tiny_list(list_instr ptr); 
+void format_node(list_data ptr, string data_type); 

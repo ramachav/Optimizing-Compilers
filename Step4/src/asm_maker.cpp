@@ -244,20 +244,13 @@ void clean_3ac_list(list_data ptr) {
   list_data::iterator index = inter_list.begin();
   ptr.clear();
   while(index != inter_list.end()) {
-    if(!((*index)->op_value == "_" || (*index)->op_value == "sys writei" || (*index)->op_value == "sys writer" || (*index)->op_value == "STOREI" || (*index)->op_value == "STOREF" || (*index)->op_value == "sys writes" || (*index)->op_value == "sys readi" || (*index)->op_value == "sys readr")) {
-      if((*index)->Rs == "_")
-	index++;
-      else if((*index)->Rt == "_")
-	index++;
-      else if((*index)->reg_dest == "_")
-	index++;
-      else {
-	ptr.push_back(*index);
-	index++;
-      }
-    }
-    else if((*index)->op_value == "_")
+    if((*index)->op_value == "_")
       index++;
+    else if(!((*index)->op_value == "sys writei" || (*index)->op_value == "sys writer" || (*index)->op_value == "STOREI" || (*index)->op_value == "STOREF" || (*index)->op_value == "sys writes" || (*index)->op_value == "sys readi" || (*index)->op_value == "sys readr")) {
+      if(!((*index)->Rs == "_" || (*index)->Rt == "_" || (*index)->reg_dest == "_"))
+	ptr.push_back(*index);
+      index++;
+    }
     else {
       ptr.push_back(*index);
       index++;
@@ -413,9 +406,6 @@ void format_node(list_data ptr, string data_type) {
 	else if((*index)->op_value == ":=")
 	  (*index)->op_value = "STOREF";
       }
-      else if(data_type == "STRING") {
-	
-      }
     }
   }
 }
@@ -446,38 +436,31 @@ void convert_STto3AC() {
 }
 
 void create_tiny_code(list_data ptr) {
-  //tiny_list = threeAC_list;
-  //threeAC_list.clear();
   convert_STto3AC();
-  list_instr::iterator index = tiny_list.begin();
-  list_data::iterator i = threeAC_list.begin();
+  list_data::iterator index = ptr.begin();
   string temp_value;
 
-  while(i != threeAC_list.end()) {
+  while(index != ptr.end()) {
     tiny_instr * fresh_node = new tiny_instr;
-    fresh_node->opcode = (*i)->op_value;
-    fresh_node->Rs = (*i)->Rs;
-    fresh_node->Rt = (*i)->Rt;
-    fresh_node->Rd = (*i)->reg_dest;
+    fresh_node->opcode = (*index)->op_value;
+    fresh_node->Rs = (*index)->Rs;
+    fresh_node->Rt = (*index)->Rt;
+    fresh_node->Rd = (*index)->reg_dest;
+    if(fresh_node->opcode == "STOREF" || fresh_node->opcode == "STOREI")
+      fresh_node->opcode = "move";
+    if(fresh_node->Rs[0] == '$') {
+      temp_value = fresh_node->Rs;
+      fresh_node->Rs = "r" + temp_value.substr(2);
+    }
+    if(fresh_node->Rt[0] == '$') {
+      temp_value = fresh_node->Rt;
+      fresh_node->Rt = "r" + temp_value.substr(2);
+    }
+    if(fresh_node->Rd[0] == '$') {
+      temp_value = fresh_node->Rd;
+      fresh_node->Rd = "r" + temp_value.substr(2);
+    }
     tiny_list.push_back(fresh_node);
-    i++;
-  }
-  while(index != tiny_list.end()) {
-    
-    if((*index)->opcode == "STOREF" || (*index)->opcode == "STOREI")
-      (*index)->opcode = "move";
-    if((*index)->Rs[0] == '$') {
-      temp_value = (*index)->Rs;
-      (*index)->Rs = "r" + temp_value.substr(2);
-    }
-    if((*index)->Rt[0] == '$') {
-      temp_value = (*index)->Rt;
-      (*index)->Rt = "r" + temp_value.substr(2);
-    }
-    if((*index)->Rd[0] == '$') {
-      temp_value = (*index)->Rd;
-      (*index)->Rd = "r" + temp_value.substr(2);
-    }
     index++;
   }
 }
