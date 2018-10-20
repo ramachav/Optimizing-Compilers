@@ -558,32 +558,11 @@ expr_list_tail:    	COMMA expr expr_list_tail {
 primary:           	OPENPARENTHESIS expr CLOSEPARENTHESIS { $$ = $2; } | id {
 			threeAC_node * fresh_node = new threeAC_node;
 			list_data * primary_list = new list_data;
-			int temp_block_count = block_count;
-			string temp_leaf_scope;
 			fresh_node->op_value = $1;
 			symbol_table_tree * temp_search = new symbol_table_tree;
-			
-			/*while(temp_block_count > 0) {
-				stringstream temp_string;
-   				string int2string;
-    				temp_string << temp_block_count;
-    				int2string = temp_string.str();
-    				temp_leaf_scope = "BLOCK " + int2string;
-				temp_search = check_leaf($1, temp_leaf_scope);
-				if(temp_search != NULL)
-				     fresh_node->op_type = temp_search->leaf_type;
-				temp_block_count--;
-			}
-			if(temp_search == NULL) {
-				temp_search = check_leaf($1, "main");
-				if(temp_search != NULL)
-				     fresh_node->op_type = temp_search->leaf_type;
-				else {*/
-				     temp_search = check_leaf($1, "GLOBAL");
-				     if(temp_search != NULL)
-				     	  fresh_node->op_type = temp_search->leaf_type;
-			//	}
-			//}
+			temp_search = check_leaf($1, "GLOBAL");
+			if(temp_search != NULL)
+			     	  fresh_node->op_type = temp_search->leaf_type;
 			primary_list->push_back(fresh_node);
 			$$ = primary_list;
 			} | INTLITERAL {
