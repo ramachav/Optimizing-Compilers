@@ -1,0 +1,140 @@
+
+
+;IR code
+;PUSH   
+;PUSHREGS   
+;JSR FUNC_main  
+;HALT   
+;LABEL FUNC_main  
+;LINK 1  
+;STOREF 0.000100 !T0 
+;STOREF !T0 tolerance 
+;READF num  
+;STOREF num approx 
+;STOREI 0 !T1 
+;STOREI !T1 count 
+;STOREF 0.000000 !T2 
+;STOREF !T2 diff 
+;STOREI 0 !T3 
+;STOREI !T3 enough 
+;LABEL WHILE_START_1  
+;STOREI 1 !T4 
+;EQI enough !T4 WHILE_END_2
+;STOREI 1 !T6 
+;ADDI count !T6 !T5
+;STOREI !T5 count 
+;DIVF num approx !T7
+;ADDF approx !T7 !T8
+;STOREF 0.500000 !T10 
+;MULF !T10 !T8 !T9
+;STOREF !T9 newapprox 
+;SUBF approx newapprox !T11
+;STOREF !T11 diff 
+;STOREF 0.000000 !T12 
+;LEF diff !T12 ELSE_3
+;STOREF tolerance !T13 
+;GEF diff !T13 ELSE_5
+;STOREI 1 !T14 
+;STOREI !T14 enough 
+;JUMP END_IF_ELSE6  
+;LABEL ELSE_5  
+;LABEL END_IF_ELSE6  
+;JUMP END_IF_ELSE4  
+;LABEL ELSE_3  
+;STOREF 0.000000 !T16 
+;SUBF !T16 tolerance !T15
+;STOREF !T15 !T17 
+;LEF diff !T17 ELSE_7
+;STOREI 1 !T18 
+;STOREI !T18 enough 
+;JUMP END_IF_ELSE8  
+;LABEL ELSE_7  
+;LABEL END_IF_ELSE8  
+;LABEL END_IF_ELSE4  
+;STOREF newapprox approx 
+;JUMP WHILE_START_1  
+;LABEL WHILE_END_2  
+;WRITEF approx  
+;WRITES space  
+;WRITEI count  
+;WRITES eol  
+;RET   
+var count
+var enough
+var newapprox
+var approx
+var num
+var tolerance
+var diff
+str eol "\n"
+str space " "
+push  
+jsr  FUNC_main
+sys halt
+label  FUNC_main
+link  1
+move 0.000100 r0
+move r0 tolerance
+sys readr num 
+move num r20
+move r20 approx
+move 0 r1
+move r1 count
+move 0.000000 r2
+move r2 diff
+move 0 r3
+move r3 enough
+label  WHILE_START_1
+move 1 r4
+cmpi  enough r4
+jeq  WHILE_END_2
+move 1 r6
+move count r5
+addi r6 r5
+move r5 count
+move num r7
+divr approx r7
+move approx r8
+addr r7 r8
+move 0.500000 r10
+move r10 r9
+mulr r8 r9
+move r9 newapprox
+move approx r11
+subr newapprox r11
+move r11 diff
+move 0.000000 r12
+cmpr  diff r12
+jle  ELSE_3
+move tolerance r13
+cmpr  diff r13
+jge  ELSE_5
+move 1 r14
+move r14 enough
+jmp  END_IF_ELSE6
+label  ELSE_5
+label  END_IF_ELSE6
+jmp  END_IF_ELSE4
+label  ELSE_3
+move 0.000000 r16
+move r16 r15
+subr tolerance r15
+move r15 r17
+cmpr  diff r17
+jle  ELSE_7
+move 1 r18
+move r18 enough
+jmp  END_IF_ELSE8
+label  ELSE_7
+label  END_IF_ELSE8
+label  END_IF_ELSE4
+move newapprox r19
+move r19 approx
+jmp  WHILE_START_1
+label  WHILE_END_2
+sys writer approx 
+sys writes space 
+sys writei count 
+sys writes eol 
+unlnk
+ret
