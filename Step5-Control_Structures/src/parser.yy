@@ -718,7 +718,6 @@ cond:              	expr compop expr {
 					format_condition_node(expr_list1);
 				}
 			}
-			print_inter_list(*expr_list1, "Condition statement list");
 			$$ = expr_list1;
 			} | TRUE { $$ = NULL; } | FALSE {
 			list_data * cond_list = new list_data;
@@ -810,7 +809,7 @@ for_stmt:          	for_stmt_start OPENPARENTHESIS init_stmt SEMICOLON cond SEMI
 			threeAC_node * temp_cond = cond_list->back();
 			threeAC_node * fresh_node1 = new threeAC_node;
 			threeAC_node * fresh_node2 = new threeAC_node;
-			
+			threeAC_node * fresh_node3 = new threeAC_node;
 			for_stmt_list->splice(for_stmt_list->end(), *init_stmt_list);
 			fresh_node1->op_value = "label";
 			fresh_node1->Rs = "_";
@@ -821,8 +820,11 @@ for_stmt:          	for_stmt_start OPENPARENTHESIS init_stmt SEMICOLON cond SEMI
 			for_stmt_list->splice(for_stmt_list->end(), *stmt_list_list);
 			for_stmt_list->splice(for_stmt_list->end(), *incr_stmt_list);
 
-			fresh_node1->op_value = "jmp";
-			for_stmt_list->push_back(fresh_node1);
+			fresh_node3->op_value = "jmp";
+			fresh_node3->Rs = "_";
+			fresh_node3->Rt = "_";
+			fresh_node3->reg_dest = fresh_node1->reg_dest;
+			for_stmt_list->push_back(fresh_node3);
 
 			fresh_node2->op_value = "label";
 			fresh_node2->Rs = "_";

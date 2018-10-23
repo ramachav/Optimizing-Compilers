@@ -1,0 +1,82 @@
+
+
+;IR code
+;PUSH   
+;PUSHREGS   
+;JSR FUNC_main  
+;HALT   
+;LABEL FUNC_main  
+;LINK 1  
+;STOREI 0 !T0 
+;STOREI !T0 i 
+;STOREI 0 !T1 
+;STOREI !T1 a 
+;STOREI 0 !T2 
+;STOREI !T2 b 
+;LABEL WHILE_START_1  
+;STOREI 10 !T3 
+;EQI i !T3 WHILE_END_2
+;READI p  
+;STOREI 10 !T4 
+;LEI p !T4 ELSE_3
+;STOREI 1 !T6 
+;ADDI a !T6 !T5
+;STOREI !T5 a 
+;JUMP END_IF_ELSE4  
+;LABEL ELSE_3  
+;STOREI 1 !T8 
+;ADDI b !T8 !T7
+;STOREI !T7 b 
+;LABEL END_IF_ELSE4  
+;STOREI 1 !T10 
+;ADDI i !T10 !T9
+;STOREI !T9 i 
+;JUMP WHILE_START_1  
+;LABEL WHILE_END_2  
+;WRITEI a  
+;WRITEI b  
+;RET   
+var a
+var b
+var i
+var p
+push  
+jsr  FUNC_main
+sys halt
+label  FUNC_main
+link  1
+move 0 r0
+move r0 i
+move 0 r1
+move r1 a
+move 0 r2
+move r2 b
+label  WHILE_START_1
+move 10 r3
+cmpi  i r3
+jeq  WHILE_END_2
+sys readi p 
+move 10 r4
+cmpi  p r4
+jle  ELSE_3
+move 1 r6
+move a r5
+addi r6 r5
+move r5 a
+jmp  END_IF_ELSE4
+label  ELSE_3
+move 1 r8
+move b r7
+addi r8 r7
+move r7 b
+label  END_IF_ELSE4
+move 1 r10
+move i r9
+addi r10 r9
+move r9 i
+jmp  WHILE_START_1
+label  WHILE_END_2
+sys writei a 
+sys writei b 
+unlnk
+ret
