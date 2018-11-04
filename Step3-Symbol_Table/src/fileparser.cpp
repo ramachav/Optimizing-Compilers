@@ -156,9 +156,9 @@ void print_symbol_table_tree(symbol_table_tree *trunk) {
     }
     else {
       if(!strcmp(temp_stem->leaf_type, "STRING"))
-	printf("name %s type %s value %s\n", temp_stem->leaf_name, temp_stem->leaf_type, temp_stem->leaf_string);
+	printf("name %s type %s value %s scope %s\n", temp_stem->leaf_name, temp_stem->leaf_type, temp_stem->leaf_string, temp_stem->leaf_scope);
       else if(!strcmp(temp_stem->leaf_type, "INT") || !strcmp(temp_stem->leaf_type, "FLOAT"))
-	printf("name %s type %s\n", temp_stem->leaf_name, temp_stem->leaf_type);
+	printf("name %s type %s scope %s\n", temp_stem->leaf_name, temp_stem->leaf_type, temp_stem->leaf_scope);
     }
     temp_stem = temp_stem->next_leaf;
   }

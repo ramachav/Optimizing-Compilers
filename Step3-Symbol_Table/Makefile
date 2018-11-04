@@ -16,6 +16,9 @@ symbol_table:
 	g++ autogenerate/lex.yy.c autogenerate/parser.cpp src/fileparser.hpp src/fileparser.cpp -lfl -o testresults/ramachav_compiler
 
 test_symbol_table:
+	./testresults/ramachav_compiler testinputs/step6_test1.micro > testresults/step6_test1.out
+	./testresults/ramachav_compiler testinputs/step6_test2.micro > testresults/step6_test2.out
+	./testresults/ramachav_compiler testinputs/step6_test3.micro > testresults/step6_test3.out
 	./testresults/ramachav_compiler testinputs/test1.micro > testresults/test1.out
 	./testresults/ramachav_compiler testinputs/test5.micro > testresults/test5.out
 	./testresults/ramachav_compiler testinputs/test6.micro > testresults/test6.out
