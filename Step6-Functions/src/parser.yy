@@ -105,6 +105,7 @@ program:		PROGRAM id _BEGIN pgm_body _END {
 			create_tiny_code(threeAC_list);
 			clean_tiny_list(tiny_list);
 			print_tiny_code(tiny_list);
+			dalloc_symbol_table_tree();
 			};
 id:	   		IDENTIFIER;
 pgm_body:		decl func_declarations;

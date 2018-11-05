@@ -19,6 +19,21 @@ public:
   int is_parameter;
   int slot_number;
   symbol_table_tree *next_leaf;       //Pointer to the next leaf node
+
+  symbol_table_tree() {
+    leaf_name = "_";
+    leaf_type = "_";
+    leaf_scope = "_";
+    branch_scope = "_";
+    leaf_string = "_";
+    leaf_int = 0;
+    leaf_float = 0.0;
+    has_sub_leaves = 0;
+    is_parameter = 0;
+    slot_number = 0;
+    next_leaf = NULL;
+  }
+
 };
 
 class tiny_instr {
@@ -27,6 +42,13 @@ public:
   string Rs;
   string Rt;
   string Rd;
+
+  tiny_instr() {
+    opcode = "_";
+    Rs = "_";
+    Rt = "_";
+    Rd = "_";
+  }
 };
 
 class threeAC_node {
@@ -40,6 +62,18 @@ public:
   string left_child_op_value;
   string right_child_op_type;
   string right_child_op_value;
+
+  threeAC_node() {
+    op_type = "_";
+    op_value = "_";
+    Rs = "_";
+    Rt = "_";
+    reg_dest = "_";
+    left_child_op_value = "_";
+    right_child_op_value = "_";
+    left_child_op_type = "_";
+    right_child_op_type = "_";
+  }
 };
 
 typedef list<threeAC_node *> list_data;
@@ -49,7 +83,6 @@ typedef list<tiny_instr *> list_instr;
 void create_leaf(string name_leaf, string type_leaf, string string_leaf, float float_leaf, int int_leaf, int is_param);
 symbol_table_tree * check_leaf(string name_leaf, string scope_leaf);
 symbol_table_tree * check_branch(string scope_branch);
-threeAC_node * create_new_node();
 
 //Parser file functions (used to create an entry in the current symbol table when the non-terminal is encountered)
 void start_block_scope(string name);
