@@ -114,7 +114,7 @@ symbol_table_tree * check_leaf(string name_leaf, string scope_leaf) {
     current_leaf = stem->next_leaf;
 
   if(!current_leaf->leaf_name.empty()) {
-    while(current_leaf->next_leaf != NULL) {
+    while(current_leaf != NULL) {
       if(current_leaf->leaf_scope == scope_leaf && current_leaf->leaf_name == name_leaf)
 	return current_leaf;
       else
@@ -399,6 +399,8 @@ void format_node(list_data * ptr, string data_type) {
 	  (*index)->op_value = "muli";
 	else if((*index)->op_value == "/")
 	  (*index)->op_value = "divi";
+	else if((*index)->op_value == ":=")
+	  (*index)->op_value = "STOREI";
       }
       else if(data_type == "FLOAT" && (*index)->op_type == "FLOAT") {
 	if((*index)->op_value == "+")
@@ -409,14 +411,8 @@ void format_node(list_data * ptr, string data_type) {
 	  (*index)->op_value = "mulr";
 	else if((*index)->op_value == "/")
 	  (*index)->op_value = "divr";
-      }
-      if(data_type == "INT" && (*index)->op_value == ":=")
-	(*index)->op_value = "STOREI";
-      else if(data_type == "FLOAT" && (*index)->op_value == ":=")
-	(*index)->op_value = "STOREF";
-      else if(data_type == "_" && (*index)->op_value == ":=") {
-	(*index)->op_value = "STOREF";
-	(*index)->op_type = "FLOAT";
+	else if((*index)->op_value == ":=")
+	  (*index)->op_value = "STOREF";
       }
     }
   }
