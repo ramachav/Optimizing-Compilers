@@ -180,7 +180,6 @@ func_body:	        decl stmt_list {
 				set_up_gen_and_kill(stmt_list_list);
 				set_up_in_and_out(stmt_list_list);
 				register_reallocate(stmt_list_list);
-				print_inter_list(*stmt_list_list, "Function body with Predecessors, Successors, GEN, KILL, LIVE-IN and LIVE-OUT Sets defined: ");
 				threeAC_list.splice(threeAC_list.end(), *stmt_list_list);
 			}
 			}; 
@@ -308,9 +307,20 @@ return_stmt:        	RETURN expr SEMICOLON {
 						if((*index)->op_value == "jsr") {
 							while((*index)->reg_dest[0] != '$' && (*index)->reg_dest[1] != 'T')
 								index++;
+							string reg_dest_holder = (*index)->reg_dest;
 							(*index)->reg_dest = "$T105";
 							register_file[2].register_number = (*index)->reg_dest;
 							register_file[2].dirty = 1;
+							list_data::iterator m = return_stmt_list->begin();
+							while(m != return_stmt_list->end()) {
+								if((*m)->Rs == reg_dest_holder)
+									(*m)->Rs = "$T105";
+								if((*m)->Rt == reg_dest_holder)
+									(*m)->Rt = "$T105";
+								if((*m)->reg_dest == reg_dest_holder)
+									(*m)->reg_dest = "$T105";
+								m++;
+							}
 							break;
 						}
 					}
@@ -351,7 +361,6 @@ return_stmt:        	RETURN expr SEMICOLON {
 			return_stmt_list->push_back(return_instr);
 
 			format_node(return_stmt_list, temp_return->op_type);
-			//print_inter_list(*return_stmt_list, "Return Statement List:");
 			
 			$$ = return_stmt_list;
 			};
