@@ -1,0 +1,72 @@
+;IR code
+;PUSH   
+;PUSHREGS   
+;JSR FUNC_main  
+;HALT   
+;LABEL FUNC_main  
+;LINK 4  
+;STOREI 29 !T0 
+;STOREI !T0 $-2 
+;LABEL FOR_LOOP_START_1  
+;STOREI 0 !T1 
+;STOREI !T1 $-1 
+;LABEL FOR_COND_1  
+;STOREI 100 !T2 
+;GEI $-1 !T2 FOR_END_1
+;STOREI 15 !T4 
+;ADDI $-2 !T4 !T3
+;STOREI !T3 $-3 
+;STOREI 4 !T6 
+;MULI $-1 !T6 !T5
+;STOREI !T5 $-4 
+;LABEL FOR_INCR_1  
+;STOREI 1 !T8 
+;ADDI $-1 !T8 !T7
+;STOREI !T7 $-1 
+;JUMP FOR_COND_1  
+;LABEL FOR_END_1  
+;LABEL FOR_LOOP_END_1  
+;WRITEI $-3  
+;WRITEI $-4  
+;UNLINK   
+;RET   
+
+push  
+push r0
+push r1
+push r2
+push r3
+jsr  FUNC_main
+sys halt
+label  FUNC_main
+link  4
+move 29 r0
+move r0 $-2
+label  FOR_LOOP_START_1
+move 0 r1
+move r1 $-1
+label  FOR_COND_1
+move 100 r2
+cmpi  $-1 r2
+jge  FOR_END_1
+move 15 r4
+move $-2 r3
+addi r4 r3
+move r3 $-3
+move 4 r6
+move $-1 r5
+muli r6 r5
+move r5 $-4
+label  FOR_INCR_1
+move 1 r8
+move $-1 r7
+addi r8 r7
+move r7 $-1
+jmp  FOR_COND_1
+label  FOR_END_1
+label  FOR_LOOP_END_1
+sys writei $-3 
+sys writei $-4 
+unlnk
+ret
+

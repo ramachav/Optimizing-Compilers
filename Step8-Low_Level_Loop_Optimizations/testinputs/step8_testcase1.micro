@@ -1,0 +1,13 @@
+PROGRAM loop1
+BEGIN
+	FUNCTION VOID main ()
+	BEGIN
+		INT a, c, d;
+		FOR (a:=0; a<100; a:=a+1)
+				c:=29;
+				d:=d+4;
+		ENDFOR
+		WRITE (c);
+		WRITE (d);
+	END
+END
