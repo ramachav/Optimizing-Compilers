@@ -1,2 +1,3 @@
-#Low-Level Loop Optimization
-This step 
+# Low-Level Loop Optimization
+This version of the compiler implements another form of dataflow analysis in addition to the liveness analysis implemented in the previous version. A reaching definition analysis was also implemented in this updated compiler. This analysis has the ability to determine which definitions of a particular variable are able to reach a certain point in the program. It's similar to liveness analysis, but instead of checking the liveness of a variable at a particular program point, it checks the liveness of a variable definition statement at a particular program point. The primary reason for performing this "reaching definition " analysis was to determine loop invariant statements in a program. Once the statement has been identified as loop invariant, it can be moved out of the loop, thereby improving the performance of the program. \
+Once this analysis was implemented, a performance improvement of about 15-18% was noticed when the test cases were run.
