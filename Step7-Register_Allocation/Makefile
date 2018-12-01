@@ -46,6 +46,7 @@ test_assembly:
 	./testresults/ramachav_compiler testinputs/step7_test19.micro > testresults/step7_test19.out
 	./testresults/ramachav_compiler testinputs/step7_test20.micro > testresults/step7_test20.out
 	./testresults/ramachav_compiler testinputs/step7_test21.micro > testresults/step7_test21.out
+	./testresults/ramachav_compiler testinputs/step7_test22.micro > testresults/step7_test22.out
 test_results:
 	./tiny testresults/factorial2.out < testinputs/factorial2.input > testresults/test61_output.out
 	./tiny testresults/fibonacci2.out < testinputs/fibonacci2.input > testresults/test62_output.out
@@ -74,6 +75,7 @@ test_results:
 	./tiny testresults/step7_test19.out < testinputs/step7_test19.input > testresults/test19_output.out
 	./tiny testresults/step7_test20.out < testinputs/step7_test20.input > testresults/test20_output.out
 	./tiny testresults/step7_test21.out < testinputs/step7_test21.input > testresults/test21_output.out
+	./tiny testresults/step7_test22.out < testinputs/step7_test22.input > testresults/test22_output.out
 test_compares:
 	./tiny2 testoutputs/factorial2.out < testinputs/factorial2.input > testresults/test61_output_compare.out
 	./tiny2 testoutputs/fibonacci2.out < testinputs/fibonacci2.input > testresults/test62_output_compare.out
