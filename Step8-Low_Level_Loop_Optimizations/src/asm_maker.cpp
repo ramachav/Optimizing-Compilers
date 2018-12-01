@@ -913,86 +913,117 @@ void set_up_invariance_and_code_motion(list_data * ptr) {
   list_data::iterator i;
   list_data::iterator j;
   list_data::iterator k;
-  for(j = ptr->begin(); ((*j)->loop_header == 0 && j != ptr->end()); j++);
-  for(k = j; !((*k)->loop_exit && (*k)->op_value == "label") && k != ptr->end(); k++);
-  i = j;  i--;
-  list_data::iterator index;
-  int inside_loop = 0;
-  for(index = ptr->begin(); index != ptr->end(); index++) {
-    symbol_table_tree * temp_search = new symbol_table_tree;
-    if(index == j)
-      inside_loop = 1;
-    if(index == k)
-      inside_loop = 0;
-    if(((*index)->op_value == "STOREI" || (*index)->op_value == "STOREF" || (*index)->op_value == "sys readi" ||(*index)->op_value == "sys readr") && (*index)->reg_dest[0] != '$' && (*index)->reg_dest[1] != 'T') {
-      if(inside_loop) {
-	rd_set_data::iterator x;
-	int count_defs = 0;
-	for(x = (*k)->rd_in.begin(); x != (*k)->rd_in.end(); x++) {
-	  if((*index)->reg_dest == (*x)->variable_value)
-	    count_defs++;
-	}
-	temp_search = check_leaf((*index)->reg_dest, current_function_scope);
-	if(temp_search == NULL) {
-	  temp_search = check_leaf((*index)->reg_dest, "GLOBAL");
-	  if(temp_search != NULL) {
-	    if(count_defs > 1)
-	      temp_search->loop_invariant = 0;
-	    for(x = (*i)->rd_out.begin(); x != (*i)->rd_out.end(); x++) {
+  for(j = ptr->begin(); (j != ptr->end()); j++) {
+    if((*j)->loop_header) {
+      for(k = j; !(*k)->loop_exit; k++);
+      i = k; k++;
+      while(!(*k)->loop_exit && (*k)->reg_dest != (*i)->reg_dest && (*k)->op_value != "label") k++;
+      i = j;  i--;
+      list_data::iterator index;
+      int inside_loop = 0;
+      for(index = ptr->begin(); index != k; index++) {
+	symbol_table_tree * temp_search = new symbol_table_tree;
+	if(index == j)
+	  inside_loop = 1;
+	if(((*index)->op_value == "STOREI" || (*index)->op_value == "STOREF" || (*index)->op_value == "sys readi" ||(*index)->op_value == "sys readr") && (*index)->reg_dest[0] != '$' && (*index)->reg_dest[1] != 'T') {
+	  if(inside_loop) {
+	    rd_set_data::iterator x;
+	    int count_defs = 0;
+	    for(x = (*k)->rd_in.begin(); x != (*k)->rd_in.end(); x++) {
 	      if((*index)->reg_dest == (*x)->variable_value)
+		count_defs++;
+	    }
+	    temp_search = check_leaf((*index)->reg_dest, current_function_scope);
+	    if(temp_search == NULL) {
+	      temp_search = check_leaf((*index)->reg_dest, "GLOBAL");
+	      if(temp_search != NULL) {
+		if(count_defs > 1)
+		  temp_search->loop_invariant = 0;
+		for(x = (*i)->rd_out.begin(); x != (*i)->rd_out.end(); x++) {
+		  if((*index)->reg_dest == (*x)->variable_value)
+		    temp_search->loop_invariant = 0;
+		}
+		list_data::iterator ind;
+		for(ind = j; ind != k; ind++) {
+		  if((*ind)->loop_exit) {
+		    int is_there = 0;
+		    for(x = (*ind)->rd_out.begin(); x != (*ind)->rd_out.end(); x++) {
+		      if((*x)->variable_value == (*index)->reg_dest)
+			is_there = 1;
+		    }
+		    if(!is_there) {
+		      temp_search->loop_invariant = 0;
+		      break;
+		    }
+		  }
+		}
+		if(mutually_loop_variant(ptr, (*index)->reg_dest, (*index)->statement_number))
+		  temp_search->loop_invariant = 0;
+	      }
+	    }
+	    else {
+	      if(count_defs > 1)
+		temp_search->loop_invariant = 0;
+	      for(x = (*i)->rd_out.begin(); x != (*i)->rd_out.end(); x++) {
+		if((*index)->reg_dest == (*x)->variable_value)
+		  temp_search->loop_invariant = 0;
+	      }
+	      list_data::iterator ind;
+	      for(ind = j; ind != k; ind++) {
+		if((*ind)->loop_exit) {
+		  int is_there = 0;
+		  for(x = (*ind)->rd_out.begin(); x != (*ind)->rd_out.end(); x++) {
+		    if((*x)->variable_value == (*index)->reg_dest)
+		      is_there = 1;
+		  }
+		  if(!is_there) {
+		    temp_search->loop_invariant = 0;
+		    break;
+		  }
+		}
+	      }
+	      if(mutually_loop_variant(ptr, (*index)->reg_dest, (*index)->statement_number))
 		temp_search->loop_invariant = 0;
 	    }
-	    if(mutually_loop_variant(ptr, (*index)->reg_dest, (*index)->statement_number))
-	      temp_search->loop_invariant = 0;
-	  }
-	}
-	else {
-	  if(count_defs > 1)
-	    temp_search->loop_invariant = 0;
-	  for(x = (*i)->rd_out.begin(); x != (*i)->rd_out.end(); x++) {
-	    if((*index)->reg_dest == (*x)->variable_value)
-	      temp_search->loop_invariant = 0;
-	  }
-	  if(mutually_loop_variant(ptr, (*index)->reg_dest, (*index)->statement_number))
-	    temp_search->loop_invariant = 0;
-	}
-	if(temp_search->loop_invariant) {
-	  list_data::iterator ind;
-	  list_data invariant_stmt_list;
-	  for(ind = ptr->begin(); ind != index; ind++) {
-	    if((*ind)->statement_number == (*index)->statement_number) {
+	    if(temp_search->loop_invariant) {
+	      list_data::iterator ind;
+	      list_data invariant_stmt_list;
+	      for(ind = ptr->begin(); ind != index; ind++) {
+		if((*ind)->statement_number == (*index)->statement_number) {
+		  invariant_stmt_list.push_back((*ind));
+		  ind = ptr->erase(ind);
+		  ind--;
+		}
+	      }
 	      invariant_stmt_list.push_back((*ind));
-	      ind = ptr->erase(ind);
-	      ind--;
+	      index = ptr->erase(ind);
+	      ptr->splice(j, invariant_stmt_list);
 	    }
 	  }
-	  invariant_stmt_list.push_back((*ind));
-	  index = ptr->erase(ind);
-	  ptr->splice(j, invariant_stmt_list);
-	}
-      }
-      else {
-	rd_set_data::iterator x;
-	int count_defs = 0;
-	for(x = (*k)->rd_in.begin(); x != (*k)->rd_in.end(); x++) {
-	  if((*index)->reg_dest == (*x)->variable_value)
-	    count_defs++;
-	}
-	temp_search = check_leaf((*index)->reg_dest, current_function_scope);
-	if(temp_search == NULL) {
-	  temp_search = check_leaf((*index)->reg_dest, "GLOBAL");
-	  if(temp_search != NULL) {
-	    if(count_defs > 1)
-	      temp_search->loop_invariant = 0;
+	  else {
+	    rd_set_data::iterator x;
+	    int count_defs = 0;
+	    for(x = (*k)->rd_in.begin(); x != (*k)->rd_in.end(); x++) {
+	      if((*index)->reg_dest == (*x)->variable_value)
+		count_defs++;
+	    }
+	    temp_search = check_leaf((*index)->reg_dest, current_function_scope);
+	    if(temp_search == NULL) {
+	      temp_search = check_leaf((*index)->reg_dest, "GLOBAL");
+	      if(temp_search != NULL) {
+		if(count_defs > 1)
+		  temp_search->loop_invariant = 0;
+	      }
+	    }
+	    else {
+	      if(count_defs > 1)
+		temp_search->loop_invariant = 0;
+	    }	
 	  }
 	}
-	else {
-	  if(count_defs > 1)
-	    temp_search->loop_invariant = 0;
-	}	
       }
     }
-  }	  
+  }
 }
 
 int mutually_loop_variant(list_data * ptr, string dest_value, int stmt_num) {

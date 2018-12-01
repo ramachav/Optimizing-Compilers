@@ -184,6 +184,7 @@ func_body:	        decl stmt_list {
 				set_up_invariance_and_code_motion(stmt_list_list);
 				register_reallocate(stmt_list_list);
 				format_params_and_locals(stmt_list_list, current_function_scope);
+				print_inter_list(*stmt_list_list, "Function statement list with REACH IN and OUT sets defined: ");
 				threeAC_list.splice(threeAC_list.end(), *stmt_list_list);
 			}
 			}; 
@@ -708,8 +709,11 @@ call_expr:         	id OPENPARENTHESIS expr_list CLOSEPARENTHESIS {
 			list_data * call_expr_list = new list_data;
 			list_data_list * expr_list_list = $3;
 			list_data * temp_expr_list = new list_data;
+			list_data::iterator i;
 
 			int parameter_count = count_function_params_or_locals($1, 1);
+			int jsr_count = 0;
+			int current_jsr = 0;
 			string function_name = $1;
 			list_data_list::iterator index;
 
@@ -717,8 +721,12 @@ call_expr:         	id OPENPARENTHESIS expr_list CLOSEPARENTHESIS {
 				for(index = expr_list_list->begin(); index != expr_list_list->end(); index++) {
 					temp_expr_list = (*index);
 					if(temp_expr_list != NULL) {
-						if(temp_expr_list->size() > 1)
+						if(temp_expr_list->size() > 1) {
+							for(i = temp_expr_list->begin(); i != temp_expr_list->end(); i++) {
+							      if((*i)->op_value == "jsr") {  jsr_count++;  }
+							}
 							call_expr_list->insert(call_expr_list->end(), temp_expr_list->begin(), temp_expr_list->end());
+						}
 					}
 				}
 			}
@@ -757,7 +765,6 @@ call_expr:         	id OPENPARENTHESIS expr_list CLOSEPARENTHESIS {
 			fresh_node3->Rt = "_";
 			fresh_node3->reg_dest = "r3";
 			call_expr_list->push_back(fresh_node3);
-			
 			if(expr_list_list != NULL) {
 			if(expr_list_list->size() > 1) { 
 				for(index = expr_list_list->end(); index != expr_list_list->begin(); index--) {
@@ -778,6 +785,7 @@ call_expr:         	id OPENPARENTHESIS expr_list CLOSEPARENTHESIS {
 							temp_string << id_slot;
 							
 							fresh_node->reg_dest = (param_local)? "$p" + temp_string.str() : "$l" + temp_string.str();
+							
 							if(fresh_node->reg_dest != "$p0" && fresh_node->reg_dest != "$l0")
 								call_expr_list->push_back(fresh_node);
 							else {
@@ -788,9 +796,21 @@ call_expr:         	id OPENPARENTHESIS expr_list CLOSEPARENTHESIS {
 						else {
 							threeAC_node * temp_node = temp_expr_list->back();
 							threeAC_node * fresh_node = new threeAC_node;
+							list_data::iterator i;
 							fresh_node->op_value = "push";
 							fresh_node->Rs = "_";
 							fresh_node->Rt = "_";
+							if(jsr_count > 1) {
+								for(i = temp_expr_list->begin(); i != temp_expr_list->end(); i++) {
+							      	      if((*i)->op_value == "jsr") {
+								      		if(++current_jsr == 1) {
+								      			temp_node->reg_dest = "$T105";
+											register_file[1].register_number = temp_node->reg_dest;
+											register_file[1].dirty = 1;
+										}
+								      }
+								}
+							}
 							fresh_node->reg_dest = temp_node->reg_dest;
 							call_expr_list->push_back(fresh_node);
 						}
@@ -1152,6 +1172,7 @@ while_stmt:        	while_stmt_start OPENPARENTHESIS cond CLOSEPARENTHESIS decl 
 				if((*index)->op_value == "break") {
 					(*index)->op_value = "jmp";
 					(*index)->reg_dest = temp_cond->reg_dest;
+					(*index)->loop_exit = 1;
 				}
 				else if((*index)->op_value == "continue") {
 				        (*index)->op_value = "jmp";
@@ -1236,6 +1257,7 @@ for_stmt:          	for_stmt_start OPENPARENTHESIS init_stmt SEMICOLON cond SEMI
 				if((*index)->op_value == "break") {
 					(*index)->op_value = "jmp";
 					(*index)->reg_dest = temp_cond->reg_dest;
+					(*index)->loop_exit = 1;
 				}
 				else if((*index)->op_value == "continue") {
 				        (*index)->op_value = "jmp";
