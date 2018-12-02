@@ -184,7 +184,6 @@ func_body:	        decl stmt_list {
 				set_up_invariance_and_code_motion(stmt_list_list);
 				register_reallocate(stmt_list_list);
 				format_params_and_locals(stmt_list_list, current_function_scope);
-				print_inter_list(*stmt_list_list, "Function statement list with REACH IN and OUT sets defined: ");
 				threeAC_list.splice(threeAC_list.end(), *stmt_list_list);
 			}
 			}; 
@@ -326,25 +325,28 @@ return_stmt:        	RETURN expr SEMICOLON {
 				if(search_tree != NULL)
 					temp_return->op_type = search_tree->leaf_type;
 				if(jsr_count > 1) {
+					int current_jsr = 0;
 					for(index = return_stmt_list->begin(); index != return_stmt_list->end(); index++) {
 						if((*index)->op_value == "jsr") {
+							current_jsr++;
 							while((*index)->reg_dest[0] != '$' && (*index)->reg_dest[1] != 'T')
 								index++;
 							string reg_dest_holder = (*index)->reg_dest;
-							(*index)->reg_dest = "$T105";
-							register_file[2].register_number = (*index)->reg_dest;
-							register_file[2].dirty = 1;
+							stringstream temp_string;
+							temp_string << 990 + current_jsr;
+							(*index)->reg_dest = "$T" + temp_string.str();
+							register_file[current_jsr % 4].register_number = (*index)->reg_dest;
+							register_file[current_jsr % 4].dirty = 1;
 							list_data::iterator m = return_stmt_list->begin();
 							while(m != return_stmt_list->end()) {
 								if((*m)->Rs == reg_dest_holder)
-									(*m)->Rs = "$T105";
+									(*m)->Rs = "$T" + temp_string.str();
 								if((*m)->Rt == reg_dest_holder)
-									(*m)->Rt = "$T105";
+									(*m)->Rt = "$T" + temp_string.str();
 								if((*m)->reg_dest == reg_dest_holder)
-									(*m)->reg_dest = "$T105";
+									(*m)->reg_dest = "$T" + temp_string.str();
 								m++;
 							}
-							break;
 						}
 					}
 				}
@@ -723,7 +725,7 @@ call_expr:         	id OPENPARENTHESIS expr_list CLOSEPARENTHESIS {
 					if(temp_expr_list != NULL) {
 						if(temp_expr_list->size() > 1) {
 							for(i = temp_expr_list->begin(); i != temp_expr_list->end(); i++) {
-							      if((*i)->op_value == "jsr") {  jsr_count++;  }
+							      if((*i)->op_value == "jsr")  jsr_count++;
 							}
 							call_expr_list->insert(call_expr_list->end(), temp_expr_list->begin(), temp_expr_list->end());
 						}
@@ -803,11 +805,12 @@ call_expr:         	id OPENPARENTHESIS expr_list CLOSEPARENTHESIS {
 							if(jsr_count > 1) {
 								for(i = temp_expr_list->begin(); i != temp_expr_list->end(); i++) {
 							      	      if((*i)->op_value == "jsr") {
-								      		if(++current_jsr == 1) {
-								      			temp_node->reg_dest = "$T105";
-											register_file[1].register_number = temp_node->reg_dest;
-											register_file[1].dirty = 1;
-										}
+								      		++current_jsr;
+										stringstream temp_string;
+										temp_string << 990 + current_jsr;
+								      		temp_node->reg_dest = "$T" + temp_string.str();
+										register_file[current_jsr % 4].register_number = temp_node->reg_dest;
+										register_file[current_jsr % 4].dirty = 1;
 								      }
 								}
 							}

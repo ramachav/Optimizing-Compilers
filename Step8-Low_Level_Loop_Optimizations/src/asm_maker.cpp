@@ -774,7 +774,7 @@ void register_reallocate(list_data * ptr) {
   for(index = ptr->begin(); index != ptr->end(); index++) {
     if((*index)->op_value == "jsr") {
       for(int i = 0; i < 4; i++) {
-	if(register_file[i].register_number != "$T105") {
+	if(register_file[i].register_number < "$T990") {
 	  register_file[i].register_number = "FREE";
 	  register_file[i].dirty = 0;
 	}
@@ -901,7 +901,7 @@ void register_reallocate(list_data * ptr) {
     }
     for(int i = 0; i < 4; i++) {
       set_data::iterator k = (*index)->live_out.find(register_file[i].register_number);
-      if(k == (*index)->live_out.end() && register_file[i].register_number != "$T105") {
+      if(k == (*index)->live_out.end() && register_file[i].register_number < "$T990") {
 	register_file[i].register_number = "FREE";
 	register_file[i].dirty = 0;
       }	
@@ -1031,21 +1031,17 @@ int mutually_loop_variant(list_data * ptr, string dest_value, int stmt_num) {
   symbol_table_tree * temp_search = new symbol_table_tree;
   for(index = ptr->begin(); index != ptr->end(); index++) {
     if((*index)->statement_number == stmt_num) {
-      if((*index)->Rs == dest_value || (*index)->Rt == dest_value)
+      if((*index)->Rs == dest_value || (*index)->Rt == dest_value || (*index)->op_value == "jsr")
 	return 1;
       else {
 	if((*index)->Rs[0] != '$' && (*index)->Rs[1] != 'T') {
 	  temp_search = check_leaf((*index)->Rs, current_function_scope);
-	  if(temp_search != NULL) {
-	    if(!temp_search->loop_invariant) 
+	  if(temp_search != NULL && !temp_search->loop_invariant) 
 	      return 1;
-	  }
 	  else {
 	    temp_search = check_leaf((*index)->Rs, "GLOBAL");
-	    if(temp_search != NULL) {
-	      if(!temp_search->loop_invariant)
+	    if(temp_search != NULL && !temp_search->loop_invariant)
 		return 1;
-	    }
 	  }
 	}
 	if((*index)->Rt[0] != '$' && (*index)->Rt[1] != 'T') {
@@ -1056,6 +1052,16 @@ int mutually_loop_variant(list_data * ptr, string dest_value, int stmt_num) {
 	    temp_search = check_leaf((*index)->Rt, "GLOBAL");
 	    if(temp_search != NULL && !temp_search->loop_invariant)
 	      return 1;
+	  }
+	}
+	if((*index)->reg_dest[0] != '$' && (*index)->reg_dest[1] != 'T') {
+	  temp_search = check_leaf((*index)->reg_dest, current_function_scope);
+	  if(temp_search != NULL && !temp_search->loop_invariant) 
+	      return 1;
+	  else {
+	    temp_search = check_leaf((*index)->reg_dest, "GLOBAL");
+	    if(temp_search != NULL && !temp_search->loop_invariant)
+		return 1;
 	  }
 	}
       }
