@@ -85,11 +85,14 @@ void create_leaf(string name_leaf, string type_leaf, string string_leaf, float f
       current_leaf->leaf_type = type_leaf;
       current_leaf->has_sub_leaves = 0;
       current_leaf->is_parameter = is_param;
-      current_leaf->slot_number = is_param? ++function_param_counter : ++function_slot_counter;
+      current_leaf->slot_number = (type_leaf == "STRING")? 0 : (is_param? ++function_param_counter : ++function_slot_counter);
       current_leaf->next_leaf = NULL;
 
-      if(type_leaf == "STRING")
+      if(type_leaf == "STRING") {
 	current_leaf->leaf_string = string_leaf;
+	current_leaf->leaf_scope = "GLOBAL";
+	current_leaf->branch_scope = "GLOBAL";
+      }
       else if(type_leaf == "INT")
 	current_leaf->leaf_int = int_leaf;
       else if(type_leaf == "FLOAT")
@@ -925,7 +928,7 @@ void set_up_invariance_and_code_motion(list_data * ptr) {
 	symbol_table_tree * temp_search = new symbol_table_tree;
 	if(index == j)
 	  inside_loop = 1;
-	if(((*index)->op_value == "STOREI" || (*index)->op_value == "STOREF" || (*index)->op_value == "sys readi" ||(*index)->op_value == "sys readr") && (*index)->reg_dest[0] != '$' && (*index)->reg_dest[1] != 'T') {
+	if(((*index)->op_value == "STOREI" || (*index)->op_value == "STOREF" || (*index)->op_value == "sys readi" || (*index)->op_value == "sys readr") && (*index)->reg_dest[0] != '$' && (*index)->reg_dest[1] != 'T') {
 	  if(inside_loop) {
 	    rd_set_data::iterator x;
 	    int count_defs = 0;
@@ -933,12 +936,14 @@ void set_up_invariance_and_code_motion(list_data * ptr) {
 	      if((*index)->reg_dest == (*x)->variable_value)
 		count_defs++;
 	    }
+	    for(x = (*i)->rd_out.begin();x != (*i)->rd_out.end(); x++) {
+	      if((*index)->reg_dest == (*x)->variable_value)
+		count_defs--;
+	    }
 	    temp_search = check_leaf((*index)->reg_dest, current_function_scope);
 	    if(temp_search == NULL) {
 	      temp_search = check_leaf((*index)->reg_dest, "GLOBAL");
 	      if(temp_search != NULL) {
-		if(count_defs > 1)
-		  temp_search->loop_invariant = 0;
 		for(x = (*i)->rd_out.begin(); x != (*i)->rd_out.end(); x++) {
 		  if((*index)->reg_dest == (*x)->variable_value)
 		    temp_search->loop_invariant = 0;
@@ -953,17 +958,19 @@ void set_up_invariance_and_code_motion(list_data * ptr) {
 		    }
 		    if(!is_there) {
 		      temp_search->loop_invariant = 0;
-		      break;
+		      ind = k;
 		    }
 		  }
 		}
 		if(mutually_loop_variant(ptr, (*index)->reg_dest, (*index)->statement_number))
 		  temp_search->loop_invariant = 0;
+		else
+		  temp_search->loop_invariant = 1;
+		if(count_defs > 1)
+		  temp_search->loop_invariant = 0;		
 	      }
 	    }
 	    else {
-	      if(count_defs > 1)
-		temp_search->loop_invariant = 0;
 	      for(x = (*i)->rd_out.begin(); x != (*i)->rd_out.end(); x++) {
 		if((*index)->reg_dest == (*x)->variable_value)
 		  temp_search->loop_invariant = 0;
@@ -978,11 +985,15 @@ void set_up_invariance_and_code_motion(list_data * ptr) {
 		  }
 		  if(!is_there) {
 		    temp_search->loop_invariant = 0;
-		    break;
+		    ind = k;
 		  }
 		}
 	      }
 	      if(mutually_loop_variant(ptr, (*index)->reg_dest, (*index)->statement_number))
+		temp_search->loop_invariant = 0;
+	      else
+		temp_search->loop_invariant = 1;
+	      if(count_defs > 1)
 		temp_search->loop_invariant = 0;
 	    }
 	    if(temp_search->loop_invariant) {
@@ -1056,11 +1067,11 @@ int mutually_loop_variant(list_data * ptr, string dest_value, int stmt_num) {
 	}
 	if((*index)->reg_dest[0] != '$' && (*index)->reg_dest[1] != 'T') {
 	  temp_search = check_leaf((*index)->reg_dest, current_function_scope);
-	  if(temp_search != NULL && !temp_search->loop_invariant) 
+	  if(temp_search != NULL && !temp_search->loop_invariant && (*index)->op_value == "push") 
 	      return 1;
 	  else {
 	    temp_search = check_leaf((*index)->reg_dest, "GLOBAL");
-	    if(temp_search != NULL && !temp_search->loop_invariant)
+	    if(temp_search != NULL && !temp_search->loop_invariant && (*index)->op_value == "push")
 		return 1;
 	  }
 	}

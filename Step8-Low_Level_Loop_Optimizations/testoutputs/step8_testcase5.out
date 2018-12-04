@@ -1,0 +1,83 @@
+
+
+;IR code
+;PUSH   
+;PUSHREGS   
+;JSR FUNC_main  
+;HALT   
+;LABEL FUNC_main  
+;LINK 4  
+;READI $-1  
+;READI $-2  
+;READI $-3  
+;READI $-4  
+;LABEL FOR_LOOP_START_1  
+;STOREI 0 !T0 
+;STOREI !T0 $-1 
+;LABEL FOR_COND_1  
+;STOREI $-2 !T1 
+;GEI $-1 !T1 FOR_END_1
+;STOREI $-2 $-3 
+;STOREI 4 !T3 
+;ADDI $-3 !T3 !T2
+;STOREI !T2 $-4 
+;LABEL FOR_INCR_1  
+;STOREI 1 !T5 
+;ADDI $-1 !T5 !T4
+;STOREI !T4 $-1 
+;JUMP FOR_COND_1  
+;LABEL FOR_END_1  
+;LABEL FOR_LOOP_END_1  
+;WRITEI $-1  
+;WRITES newline  
+;WRITEI $-2  
+;WRITES newline  
+;WRITEI $-3  
+;WRITES newline  
+;WRITEI $-4  
+;WRITES newline  
+;UNLINK   
+;RET   
+push  
+push r0
+push r1
+push r2
+push r3
+jsr  FUNC_main
+sys halt
+label  FUNC_main
+link  4
+sys readi $-1 
+sys readi $-2 
+sys readi $-3 
+sys readi $-4 
+label  FOR_LOOP_START_1
+move 0 r0
+move r0 $-1
+label  FOR_COND_1
+move $-2 r1
+cmpi  $-1 r1
+jge  FOR_END_1
+move $-2 $-3
+move 4 r3
+move $-3 r2
+addi r3 r2
+move r2 $-4
+label  FOR_INCR_1
+move 1 r5
+move $-1 r4
+addi r5 r4
+move r4 $-1
+jmp  FOR_COND_1
+label  FOR_END_1
+label  FOR_LOOP_END_1
+sys writei $-1 
+sys writes newline 
+sys writei $-2 
+sys writes newline 
+sys writei $-3 
+sys writes newline 
+sys writei $-4 
+sys writes newline 
+unlnk
+ret

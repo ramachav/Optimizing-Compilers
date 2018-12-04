@@ -1,0 +1,20 @@
+PROGRAM loop1
+BEGIN
+    FUNCTION VOID main ()
+    BEGIN
+        STRING newline := "\n";
+        INT a, b, c, d,e;
+        READ(a,b,c,d,e);
+        b := 100;
+        FOR (a:=0; a<b; a:=a+1)
+            c:=b+5;
+            d:=c*a+5;
+            IF (a<50)
+                e:=c+5;
+            ELSE
+                e:=c-5;
+            ENDIF
+        ENDFOR
+        WRITE (a,newline,b,newline,c,newline,d,newline,e,newline);
+    END
+END

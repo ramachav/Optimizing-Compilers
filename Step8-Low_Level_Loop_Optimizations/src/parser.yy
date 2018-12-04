@@ -213,6 +213,7 @@ base_stmt:		assign_stmt {
 			while(index != read_stmt_list->end()) {
 				(*index)->statement_number = current_statement_number;
 				index++;
+				current_statement_number++;
 			}
 			$$ = read_stmt_list;
 			} | write_stmt { $$ = $1; } | control_stmt { $$ = $1; };
