@@ -28,7 +28,7 @@ end <br />
 ---------------------------------------
 
 Tiny simulates an architecture that has 4 data registers, a stack pointer (sp),
-a frame pointer (fp) and both integer an floatingpoin arithmetic. All data
+a frame pointer (fp) and both integer an floating point arithmetic. All data
 elements have size 1. The data representation is unknown to the user.
 <br />
 Tiny accepts the following assembly codes:
