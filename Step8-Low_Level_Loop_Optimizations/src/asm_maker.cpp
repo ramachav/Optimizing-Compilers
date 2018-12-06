@@ -967,7 +967,9 @@ void set_up_invariance_and_code_motion(list_data * ptr) {
 		else
 		  temp_search->loop_invariant = 1;
 		if(count_defs > 1)
-		  temp_search->loop_invariant = 0;		
+		  temp_search->loop_invariant = 0;
+		if((*index)->op_value == "sys readi" || (*index)->op_value == "sys readr")
+		  temp_search->loop_invariant = 0;
 	      }
 	    }
 	    else {
@@ -994,6 +996,8 @@ void set_up_invariance_and_code_motion(list_data * ptr) {
 	      else
 		temp_search->loop_invariant = 1;
 	      if(count_defs > 1)
+		temp_search->loop_invariant = 0;
+	      if((*index)->op_value == "sys readi" || (*index)->op_value == "sys readr")
 		temp_search->loop_invariant = 0;
 	    }
 	    if(temp_search->loop_invariant) {
