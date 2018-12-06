@@ -33,7 +33,7 @@ elements have size 1. The data representation is unknown to the user.
 <br />
 Tiny accepts the following assembly codes:
 <br />
-var id                          ; reserves and names a memory cell. first letter alphanum <br />
+var id				; reserves and names a memory cell. first letter alphanum <br />
                                   then alphanum with punctuations, case sensitive <br />
                                 ; both integer and real (float) have the size of one memory cell <br />
 str sid    "a string constant"  ; the only operation on string constants is sys writes sid <br />
@@ -42,27 +42,27 @@ str sid    "a string constant"  ; the only operation on string constants is sys 
 ;  var and str declarations must preceed all code and labels (during debugging, <br />
 ;  enforcement of this rule can be disabled. See the "mix" command line option) <br />
 
-label target           ; a jump target	<br />
-move opmrl opmr        ; only one operand can be a memory id or stack variable <br />
-addi opmrl reg         ; integer addition, reg = reg + op1 <br />
-addr opmrl reg         ; real (i.e. floatingpoint) addition <br />
-subi opmrl reg         ; computes reg = reg - op1 <br />
+label target	           ; a jump target	<br />
+move opmrl opmr 	       ; only one operand can be a memory id or stack variable <br />
+addi opmrl reg         	; integer addition, reg = reg + op1 <br />
+addr opmrl reg         	; real (i.e. floatingpoint) addition <br />
+subi opmrl reg         	; computes reg = reg - op1 <br />
 subr opmrl reg <br />
-muli opmrl reg         ; computes reg = reg * op1 <br />
+muli opmrl reg      	   ; computes reg = reg * op1 <br />
 mulr opmrl reg	<br />
-divi opmrl reg         ; computes reg = reg /  op1 <br />
+divi opmrl reg       	  ; computes reg = reg /  op1 <br />
 divr opmrl reg	<br />
-inci reg               ; increment the (integer) register value by 1 <br />
-deci reg               ; decrement the (integer) register value by 1 <br />
-cmpi opmrl reg         ; integer comparison; must preceed  a conditional jump; <br />
+inci reg             	  ; increment the (integer) register value by 1 <br />
+deci reg               	; decrement the (integer) register value by 1 <br />
+cmpi opmrl reg         	; integer comparison; must preceed  a conditional jump; <br />
                          it compares the first operand with the second op and <br />
 			 sets  the "processor status". (The status remains the <br />
 			 same until the next cmp instruction is executed.) <br />
                          E.g, a subsequent jgt will jump if op1 > op2 <br />
 
 
-push opmrl             ; push a data item onto the stack. Operand can be <br />
-                       ;   omitted, in which case an empty element is pushed. <br />
+push opmrl      	       ; push a data item onto the stack. Operand can be <br />
+                       	;   omitted, in which case an empty element is pushed. <br />
 pop  opmr              ; pops an element from the stack. If the operand is <br />
                        ;   non-empty, the element is moved there <br />
 jsr target             ; jump to target and push the current pc onto the stack <br />
