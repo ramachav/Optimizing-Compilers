@@ -3,13 +3,14 @@ Compilers class where I created and optimized a compiler in C++ using flex and b
 
 Tiny is a very simple assembly code interpreter. 
 
-The executable runs on Sun architectures.
+The executable runs on Sun architectures
+
 ---------------------------------------
 an example Tiny program (a longer program is attached at the end):
 
 var i 
 str prompt "enter a number: " 
-str announce \nthe square is" 
+str announce "\nthe square is" 
 
 label myloop       ; main loop
 sys writes prompt 
@@ -23,6 +24,7 @@ cmpi 1 r3
 jne myloop   
 sys halt           ; optional if at end
 end 
+
 ---------------------------------------
 
 Tiny simulates an architecture that has 4 data registers, a stack pointer (sp),
@@ -65,8 +67,8 @@ pop  opmr              ; pops an element from the stack. If the operand is
                        ;   non-empty, the element is moved there
 jsr target             ; jump to target and push the current pc onto the stack
 ret                    ; pop an address from the stack and jump there
-link #                 ; push frame pointer (fp) onto stack, copy sp into fp,
-                       ;   push # empty cells onto stack
+link x                 ; push frame pointer (fp) onto stack, copy sp into fp,
+                       ;   push x empty cells onto stack
 unlnk                  ; copy fp into sp, pop fp from stack
 
 cmpr opmrl reg         ; real comparison
@@ -89,7 +91,7 @@ end                    ; end of the assembly code (not an opcode)
 notation used for the operands:
  id      stands for the name of a memory location
  sid     stands for the name of a string constant
- #       stands for an integer number
+ x       stands for an integer number
  target  stands for the name of a jump target
  $offset stands for a stack variable at address fp+offset
  reg     stands for a  register, named r0,r1,r2, or r3, case insensitive
@@ -116,6 +118,7 @@ d2: d1 +  print each line as it gets interpreted
 d2: d2 + print machine status and variable content at each step
 
 mix: allow  declarations inbetween code
+
 -----------------------------
 
 A longer sample program. The program asks for a number and prints 5 asterisk
